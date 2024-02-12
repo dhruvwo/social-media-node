@@ -19,6 +19,10 @@ const validationSchema = {
       /^[a-zA-Z0-9]+$/,
       "Lastname must contain only alphanumeric characters"
     ),
+  email: yup
+    .string()
+    .email("Invalid email address.")
+    .required("Email is required"),
   username: yup
     .string()
     .matches(
@@ -28,10 +32,6 @@ const validationSchema = {
     .min(6, "Username is too short - should be 2 chars minimum")
     .max(30, "Username is too long - should be 30 chars maximum")
     .required("Username is required"),
-  email: yup
-    .string()
-    .email("Invalid email address.")
-    .required("Email is required"),
   password: yup
     .string()
     .required("Password is required")

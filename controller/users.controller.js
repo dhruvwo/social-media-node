@@ -5,15 +5,12 @@ const HttpError = require("../utils/HttpError");
 
 const getUser = async (req, res, next) => {
   try {
-    const userJson = await userModel.findOne(
-      { _id: req.user._id },
-      {
-        password: 0,
-        otp: 0,
-        otpExpiredAt: 0,
-        isVerified: 0,
-      }
-    );
+    const userJson = await userModel.findById(req.user._id, {
+      password: 0,
+      otp: 0,
+      otpExpiredAt: 0,
+      isVerified: 0,
+    });
     return res.status(200).json({
       status: "success",
       data: userJson,
@@ -64,7 +61,7 @@ const getUserProfile = async (req, res, next) => {
     if (!userId) {
       throw new HttpError(400, "User id not provided.");
     }
-    const getUserProfile = await userModel.findOne({ _id: userId });
+    const getUserProfile = await userModel.findById(userId);
     if (!getUserProfile) {
       throw new HttpError(404, "User not found.");
     }
@@ -127,7 +124,7 @@ const getAllUsers = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
   try {
-    await userModel.deleteOne(req.user._id);
+    await userModel.findByIdAndDelete(req.user._id);
     res
       .status(200)
       .json({ status: "success", message: "User deleted successfully." });

@@ -7,17 +7,18 @@ const jwt = require("jsonwebtoken");
 const {
   firstname,
   lastname,
-  username,
   email,
+  username,
   password,
   isPrivate,
 } = require("../utils/validations");
+const { sendVerificationMail } = require("../utils/mailServices");
 
 const CREATE_USER_VALIDATION = yup.object({
   firstname,
   lastname,
-  username,
   email,
+  username,
   password,
   isPrivate,
 });
@@ -31,6 +32,15 @@ const signUp = async (req, res, next) => {
       password: bcrypt.hashSync(req.body.password, 10),
     });
     await userDocument.save();
+    const token = jwt.sign(
+      {
+        userId: userDocument._id,
+        email: req.body.email.toLowerCase(),
+      },
+      config.jwtSecret,
+      { expiresIn: "24h" }
+    );
+    await sendVerificationMail(token, req.body.email);
     return res
       .status(201)
       .json({ status: "success", message: "User signed up successfully." });
@@ -63,14 +73,21 @@ const login = async (req, res, next) => {
       )
       .lean();
     if (!user) {
-      throw new HttpError(404, "User not found.");
+      return res
+        .status(404)
+        .json({ status: "error", message: "User not found" });
     }
     if (!bcrypt.compareSync(password, user.password)) {
-      throw new HttpError(403, "Email or password does not match.");
+      return res.status(403).json({
+        status: "error",
+        message: "Email or password does not match.",
+      });
     }
-    // if (!user.isVerified) {
-    //   throw new HttpError(401, "Account not verified.");
-    // }
+    if (!user.isVerified) {
+      return res
+        .status(401)
+        .json({ status: "error", message: "Account not verified." });
+    }
     delete user.password;
     const accessToken = jwt.sign(user, config.jwtSecret, {
       expiresIn: "24h",
@@ -83,7 +100,74 @@ const login = async (req, res, next) => {
   }
 };
 
+const reSendVerificationMail = async (req, res, next) => {
+  try {
+    const userId = req.query;
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "UserId not provided." });
+    }
+    const user = await userModel.findOne({ _id: userId });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "User not found." });
+    }
+    const token = jwt.sign(
+      {
+        userId,
+        email: user.email,
+      },
+      config.jwtSecret,
+      { expiresIn: "24h" }
+    );
+    await sendVerificationMail(token, req.body.email);
+  } catch (e) {
+    next(e);
+  }
+};
+
+const verifyAccount = async (req, res, next) => {
+  try {
+    const { token } = req.query;
+    if (!token) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Token not provided" });
+    }
+
+    jwt.verify(token, config.jwtSecret, async (err, data) => {
+      if (err) {
+        res
+          .status(404)
+          .json({ status: "error", message: "Token is invalid or expired." });
+      }
+      const user = await userModel.findOne({
+        _id: data.userId,
+        email: data.email.toLowerCase(),
+      });
+
+      if (!user) {
+        return res
+          .status(404)
+          .json({ status: "error", message: "User not found" });
+      }
+
+      user.isVerified = true;
+      await user.save();
+      return res
+        .status(200)
+        .json({ status: "success", message: "User verified successfully" });
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 module.exports = {
   signUp,
   login,
+  reSendVerificationMail,
+  verifyAccount,
 };
