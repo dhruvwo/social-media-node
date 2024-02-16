@@ -3,7 +3,7 @@ const postModal = require("../models/posts.modal");
 const createPost = async (req, res) => {
   try {
     const { title, description, isPrivate } = req.body;
-    const mediaLink = req.file?.id;
+    const mediaLink = req.file?.buffer;
     const postCreate = await postModal.create({
       userId: req.user._id,
       title,
