@@ -1,12 +1,13 @@
 const { GridFsStorage } = require("multer-gridfs-storage");
-const { connection } = require("./dbConnection");
+const connection = require("./dbConnection");
 
 const storage = new GridFsStorage({
   db: connection,
-  file: (req, file) => {
+  file: (request, file) => {
+    const filename = file.originalname;
     return {
-      bucketName: "assets",
-      filename: file.originalname,
+      bucketName: "uploads",
+      filename: `${request.user._id}/${filename}`,
     };
   },
 });

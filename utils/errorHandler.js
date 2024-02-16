@@ -30,7 +30,9 @@ const errorHandler = async (error, req, res, next) => {
     }
   }
 
-  res.status(500).send("error");
+  return res
+    .status(500)
+    .send({ status: "error", message: "Internal server error" });
 };
 
 module.exports = errorHandler;

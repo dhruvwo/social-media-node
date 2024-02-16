@@ -7,8 +7,6 @@ const getUser = async (req, res, next) => {
   try {
     const userJson = await userModel.findById(req.user._id, {
       password: 0,
-      otp: 0,
-      otpExpiredAt: 0,
       isVerified: 0,
     });
     return res.status(200).json({
@@ -29,10 +27,7 @@ const UPDATE_USER_SCHEMA = yup.object({
 
 const updateUser = async (req, res, next) => {
   try {
-    delete req.body.email;
     delete req.body.password;
-    delete req.body.otp;
-    delete req.body.otpExpiredAt;
     delete req.body.isVerified;
 
     await UPDATE_USER_SCHEMA.validate(req.body);
@@ -42,7 +37,7 @@ const updateUser = async (req, res, next) => {
       { ...req.body, updatedAt: new Date().toISOString() },
       {
         new: true,
-        select: "-password -otp -otpExpiredAt",
+        select: "-password",
       }
     );
 
