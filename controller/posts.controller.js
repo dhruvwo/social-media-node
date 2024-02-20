@@ -1,52 +1,68 @@
 const postModal = require("../models/posts.modal");
+const yup = require("yup");
+const {
+  filePath,
+  title,
+  description,
+  isPrivate,
+} = require("../utils/validations");
 
-const createPost = async (req, res) => {
+const CREATE_POST_VALIDATION_SCHEMA = yup.object({
+  filePath,
+  title,
+  description,
+  isPrivate,
+});
+
+const createPost = async (req, res, next) => {
   try {
-    const { title, description, isPrivate } = req.body;
-    const mediaLink = req.file?.buffer;
-    const postCreate = await postModal.create({
+    await CREATE_POST_VALIDATION_SCHEMA.validate(req.body);
+    const createdPost = await postModal.create({
       userId: req.user._id,
-      title,
-      description,
-      isPrivate,
-      mediaLink,
+      ...req.body,
     });
-    return res.status(201).send({
-      data: postCreate,
+    return res.status(201).json({
+      status: "success",
+      data: createdPost,
     });
   } catch (e) {
     next(e);
   }
 };
 
-const getFeedPost = async (req, res) => {
+const getFeedPost = async (req, res, next) => {
   try {
-    let { pageSize, pageNumber } = req.query;
-    pageNumber = pageNumber !== 0 && pageNumber ? pageNumber - 1 : 0;
-    pageSize = pageSize ?? 5;
-    const findObj = { isPrivate: false };
-    if (req.query.search) {
-      findObj.title = {
+    let { page, perPage, search } = req.query;
+
+    page = page && page > 0 ? Number(page) - 1 : 0;
+    perPage = perPage && perPage > 0 ? perPage : 5;
+
+    let searchQuery = { isPrivate: false };
+    if (search) {
+      searchQuery.title = {
         $regex: req.query.search,
         $options: "i",
       };
     }
     if (req.query.isMyPostsOnly) {
       const userId = req.user._id;
-      findObj.userId = userId;
+      searchQuery.userId = userId;
     }
     if (req.query.isPrivate) {
-      findObj.isPrivate = req.query.isPrivate == "true";
+      searchQuery.isPrivate = req.query.isPrivate == "true";
     }
-    const totalPosts = await postModal.countDocuments(findObj);
-    const getFeedPost = await postModal
-      .find(findObj)
-      .skip(pageNumber * pageSize)
-      .limit(pageSize)
-      .sort({ created_at: "desc" });
-    return res.send({
-      data: getFeedPost,
-      total: totalPosts,
+    const totalPosts = await postModal.countDocuments(searchQuery);
+    const getPosts = await postModal
+      .find(searchQuery)
+      .skip(page * perPage)
+      .limit(perPage)
+      .sort({ createdAt: "desc" });
+    return res.status(200).json({
+      status: "success",
+      data: {
+        total: totalPosts,
+        data: getPosts,
+      },
     });
   } catch (e) {
     next(e);

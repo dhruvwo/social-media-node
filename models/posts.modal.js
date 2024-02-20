@@ -7,7 +7,7 @@ const postSchema = new mongoose.Schema(
       ref: "users",
       required: true,
     },
-    mediaLink: {
+    filePath: {
       type: String,
       required: false,
     },

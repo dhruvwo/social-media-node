@@ -10,14 +10,9 @@ const router = express.Router();
 
 router.get("/get-user", getUser);
 router.put("/update-user", updateUser);
-// router.patch("/update-user-profile", Users.updateProfile);
+router.patch("/update-user", updateUser);
 router.get("/get-users-profile", getUserProfile);
 router.get("/get-all-user", getAllUsers);
 router.delete("/delete-user", deleteUser);
-
-// router.post("/follow-user", Users.followUser);
-// router.get("/get-follow-requests", Users.getFollowRequests);
-// router.post("/accept-follow-requests", Users.acceptFollowRequest);
-// router.post("/unfollow-user", Users.unfollowUser);
 
 module.exports = router;

@@ -2,9 +2,10 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 
-const { initDatabaseConnection } = require("./utils/dbConnection");
 const config = require("./config");
 const errorHandler = require("./utils/errorHandler");
+const { serverInit } = require("./utils/serverInit");
+const { initDatabaseConnection } = require("./utils/dbConnection");
 
 const app = express();
 
@@ -18,15 +19,11 @@ app.use(errorHandler);
 
 const server = http.createServer(app);
 
+serverInit();
+initDatabaseConnection();
+
 // TODO: Init socket server here and then pass server to DB connection. So can start or stop server base on database connection. Currently not required.
 
-// initDatabaseConnection()
-//   .then(() => {
 server.listen(config.port, () => {
   console.log(`Server listing at ${config.port}.`);
 });
-// })
-// .catch(() => {
-//   server.close();
-//   console.log("Server stopped.");
-// });

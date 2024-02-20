@@ -1,7 +1,9 @@
 const userModel = require("../models/users.model");
 const yup = require("yup");
-const { firstname, lastname, username } = require("../utils/validations");
 const HttpError = require("../utils/HttpError");
+const fs = require("fs");
+const path = require("path");
+const { firstname, lastname, username } = require("../utils/validations");
 
 const getUser = async (req, res, next) => {
   try {
@@ -32,14 +34,10 @@ const updateUser = async (req, res, next) => {
 
     await UPDATE_USER_SCHEMA.validate(req.body);
     const { _id } = req.user;
-    const newUserData = await userModel.findByIdAndUpdate(
-      _id,
-      { ...req.body, updatedAt: new Date().toISOString() },
-      {
-        new: true,
-        select: "-password",
-      }
-    );
+    const newUserData = await userModel.findByIdAndUpdate(_id, req.body, {
+      new: true,
+      select: "-password",
+    });
 
     if (!newUserData) {
       throw new HttpError(404, "User not found.");
@@ -74,13 +72,13 @@ const getAllUsers = async (req, res, next) => {
   try {
     let { page, perPage, search } = req.query;
 
-    page = page && page > 0 ? page : 1;
+    page = page && page > 0 ? Number(page) - 1 : 0;
     perPage = perPage && perPage > 0 ? perPage : 5;
 
-    let searchQuery = { $match: { isVerified: true } };
+    let searchQuery = { isVerified: true };
 
     if (search) {
-      searchQuery.$match.$or = [
+      searchQuery.$or = [
         { firstname: { $regex: req.query.searchText, $options: "i" } },
         { lastname: { $regex: req.query.searchText, $options: "i" } },
         {
@@ -119,6 +117,11 @@ const getAllUsers = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
   try {
+    if (fs.existsSync(path.resolve(__dirname, `../uploads/${req.user._id}`))) {
+      await fs.rmSync(path.resolve(__dirname, `../uploads/${req.user._id}`), {
+        recursive: true,
+      });
+    }
     await userModel.findByIdAndDelete(req.user._id);
     res
       .status(200)
