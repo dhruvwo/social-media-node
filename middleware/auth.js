@@ -17,7 +17,7 @@ const authorizeUser = async (req, res, next) => {
         }
         const user = await userModel.findById(data._id);
         if (!user) {
-          throw new HttpError(404, "User not found.");
+          throw new HttpError(401, "User not found.");
         }
         if (!user.isVerified) {
           throw new HttpError(401, "User not verified.");

@@ -4,6 +4,7 @@ const HttpError = require("../utils/HttpError");
 const fs = require("fs");
 const path = require("path");
 const { firstname, lastname, username } = require("../utils/validations");
+const postModal = require("../models/posts.modal");
 
 const getUser = async (req, res, next) => {
   try {
@@ -122,6 +123,7 @@ const deleteUser = async (req, res, next) => {
         recursive: true,
       });
     }
+    await postModal.deleteMany({ userId: req.user._id });
     await userModel.findByIdAndDelete(req.user._id);
     res
       .status(200)

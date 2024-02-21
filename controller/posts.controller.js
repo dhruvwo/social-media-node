@@ -6,6 +6,8 @@ const {
   description,
   isPrivate,
 } = require("../utils/validations");
+const fs = require("fs");
+const path = require("path");
 
 const CREATE_POST_VALIDATION_SCHEMA = yup.object({
   filePath,
@@ -69,7 +71,45 @@ const getFeedPost = async (req, res, next) => {
   }
 };
 
+const getImage = async (req, res, next) => {
+  try {
+    const { postId } = req.query;
+    if (!postId) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Post Id not provided." });
+    }
+
+    const post = await postModal.findById({ _id: postId });
+    if (!post) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Post not found." });
+    }
+
+    if (!post.filePath) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Post contain no image." });
+    }
+
+    if (post.isPrivate && !post.userId === req.user._id) {
+      return res
+        .status(403)
+        .json({ status: "error", message: "Private post." });
+    }
+
+    const fileStream = fs.createReadStream(
+      path.resolve(__dirname, `../uploads/${post.filePath}`)
+    );
+    fileStream.pipe(res);
+  } catch (e) {
+    next(e);
+  }
+};
+
 module.exports = {
   createPost,
   getFeedPost,
+  getImage,
 };

@@ -40,7 +40,7 @@ const signUp = async (req, res, next) => {
       config.jwtSecret,
       { expiresIn: "24h" }
     );
-    await sendVerificationMail(token, req.body.email);
+    await sendVerificationMail(req.body, token);
     return res
       .status(201)
       .json({ status: "success", message: "User signed up successfully." });
