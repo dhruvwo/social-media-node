@@ -106,13 +106,18 @@ const reSendVerificationMail = async (req, res, next) => {
     if (!userId) {
       return res
         .status(400)
-        .json({ status: "error", message: "UserId not provided." });
+        .json({ status: "error", message: "User id not provided." });
     }
     const user = await userModel.findOne({ _id: userId });
     if (!user) {
       return res
         .status(404)
         .json({ status: "error", message: "User not found." });
+    }
+    if (user.isVerified) {
+      return res
+        .status(403)
+        .json({ status: "error", message: "User already verified." });
     }
     const token = jwt.sign(
       {
