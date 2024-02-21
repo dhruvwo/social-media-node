@@ -59,7 +59,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\": \"viral.webosmotic@gmail.com\",\r\n    \"password\": \"12345678\"\r\n}",
+					"raw": "{\r\n    \"email\": \"viraldeshle1234@gmail.com\",\r\n    \"password\": \"12345678\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -150,7 +150,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseURL}}/users/get-users-profile?userId=65c8c00553eb7cfb6d0705cf",
+					"raw": "{{baseURL}}/users/get-users-profile?userId=65cf537bf83758987bb148df",
 					"host": [
 						"{{baseURL}}"
 					],
@@ -161,7 +161,7 @@
 					"query": [
 						{
 							"key": "userId",
-							"value": "65c8c00553eb7cfb6d0705cf"
+							"value": "65cf537bf83758987bb148df"
 						}
 					]
 				}
@@ -269,7 +269,7 @@
 						{
 							"key": "image",
 							"type": "file",
-							"src": "/C:/Users/Viral/Downloads/demon-slayer-wallpaper-desktop-scaled.webp"
+							"src": "/home/webosmotic/Downloads/Images and Gifs/sample_640×426.bmp"
 						}
 					]
 				},
@@ -314,6 +314,40 @@
 						{
 							"key": "page",
 							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Post Image",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/posts/get-feed-image?postId=65d5cae3f9a9a363e512f28c",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"posts",
+						"get-feed-image"
+					],
+					"query": [
+						{
+							"key": "postId",
+							"value": "65d5cae3f9a9a363e512f28c"
 						}
 					]
 				}
