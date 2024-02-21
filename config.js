@@ -4,7 +4,7 @@ const environment = process.env.ENVIRONMENT || "local";
 
 const local = {
   baseURL: "http://localhost:5000/",
-  port: process.env.PORT,
+  port: process.env.PORT || 5000,
   dbURL: process.env.DATABASE_URL || "",
   jwtSecret: process.env.JWT_SECRET || "superSecret",
 };
