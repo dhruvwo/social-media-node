@@ -159,6 +159,12 @@ const verifyAccount = async (req, res, next) => {
           .json({ status: "error", message: "User not found" });
       }
 
+      if (user.isVerified) {
+        return res
+          .status(200)
+          .json({ status: "error", message: "User already verified" });
+      }
+
       user.isVerified = true;
       await user.save();
       return res
