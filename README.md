@@ -25,7 +25,10 @@ Postman Setup:
 For environment variable on node project:
 
 1. Create .env file in your project root folder and paste the content given below.
+
+```
    PORT=5000
    DATABASE_URL="mongodb://127.0.0.1:27017/postgram"
    NODE_MAILER_USER="{Ask Dhruv/Viral}"
    NODE_MAILER_USER_PASS="{Ask Dhruv/Viral}"
+```
