@@ -20,8 +20,9 @@ Postman Setup:
 4. Create a new environment in POSTMAN from 'Environment quick look' button and configure this two variables.
    i - baseURL :- http://localhost:5000
    ii - token :- token (You will get token after successful login)
+   PS: Make sure you save variables after changing in the postman environment.
 
-For environment variable :
+For environment variable on node project:
 
 1. Create .env file in your project root folder and paste the content given below.
    PORT=5000

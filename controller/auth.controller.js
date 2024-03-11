@@ -43,7 +43,11 @@ const signUp = async (req, res, next) => {
     await sendVerificationMail(req.body, token);
     return res
       .status(201)
-      .json({ status: "success", message: "User signed up successfully." });
+      .json({
+        status: "success",
+        message:
+          "User signed up successfully, Make sure you will get verification link on your mail, check your email (Spam) as well",
+      });
   } catch (e) {
     next(e);
   }
