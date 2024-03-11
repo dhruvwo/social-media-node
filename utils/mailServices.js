@@ -4,8 +4,8 @@ const { verificationMailTemplate } = require("./mailTemplate");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "viraldeshle1234@gmail.com",
-    pass: "sjsl ynsd taam dltj",
+    user: process.env.NODE_MAILER_USER || "",
+    pass: process.env.NODE_MAILER_USER_PASS || "",
   },
 });
 
