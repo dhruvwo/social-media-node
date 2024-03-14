@@ -41,13 +41,11 @@ const signUp = async (req, res, next) => {
       { expiresIn: "24h" }
     );
     await sendVerificationMail(req.body, token);
-    return res
-      .status(201)
-      .json({
-        status: "success",
-        message:
-          "User signed up successfully, Make sure you will get verification link on your mail, check your email (Spam) as well",
-      });
+    return res.status(201).json({
+      status: "success",
+      message:
+        "User signed up successfully, Make sure you will get verification link on your mail, check your email (Spam) as well",
+    });
   } catch (e) {
     next(e);
   }
@@ -106,13 +104,13 @@ const login = async (req, res, next) => {
 
 const reSendVerificationMail = async (req, res, next) => {
   try {
-    const userId = req.query;
-    if (!userId) {
+    const email = req.query;
+    if (!email) {
       return res
         .status(400)
-        .json({ status: "error", message: "User id not provided." });
+        .json({ status: "error", message: "Email not provided." });
     }
-    const user = await userModel.findOne({ _id: userId });
+    const user = await userModel.findOne({ email });
     if (!user) {
       return res
         .status(404)
@@ -125,13 +123,12 @@ const reSendVerificationMail = async (req, res, next) => {
     }
     const token = jwt.sign(
       {
-        userId,
-        email: user.email,
+        email,
       },
       config.jwtSecret,
       { expiresIn: "24h" }
     );
-    await sendVerificationMail(token, req.body.email);
+    await sendVerificationMail(token, email);
   } catch (e) {
     next(e);
   }
@@ -180,9 +177,37 @@ const verifyAccount = async (req, res, next) => {
   }
 };
 
+const deleteUser = async (req, res, next) => {
+  try {
+    const email = req.query;
+    if (!email) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Email not provided" });
+    }
+    const isDeleted = await userModel.findOneAndDelete({ email });
+    if (!isDeleted) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "User not found" });
+    }
+    if (fs.existsSync(path.resolve(__dirname, `../uploads/${isDeleted._id}`))) {
+      await fs.rmSync(path.resolve(__dirname, `../uploads/${isDeleted._id}`), {
+        recursive: true,
+      });
+    }
+    return res
+      .status(200)
+      .json({ status: "success", message: "User deleted successfully" });
+  } catch (e) {
+    next(e);
+  }
+};
+
 module.exports = {
   signUp,
   login,
   reSendVerificationMail,
   verifyAccount,
+  deleteUser,
 };
