@@ -1,9 +1,9 @@
 const userModel = require("../models/users.model");
 const bcrypt = require("bcrypt");
 const yup = require("yup");
-const HttpError = require("../utils/HttpError");
 const config = require("../config");
 const jwt = require("jsonwebtoken");
+const path = require("path");
 const {
   firstname,
   lastname,
@@ -12,6 +12,7 @@ const {
   password,
   isPrivate,
 } = require("../utils/validations");
+const fs = require("fs");
 const { sendVerificationMail } = require("../utils/mailServices");
 
 const CREATE_USER_VALIDATION = yup.object({
@@ -40,13 +41,13 @@ const signUp = async (req, res, next) => {
       config.jwtSecret,
       { expiresIn: "24h" }
     );
-    await sendVerificationMail(req.body, token);
+    // await sendVerificationMail(req.body, token);
     return res.status(201).json({
       status: "success",
-      message:
-        "User signed up successfully, Make sure you will get verification link on your mail, check your email (Spam) as well",
+      message: "User signed up successfully.",
     });
   } catch (e) {
+    await userModel.findOneAndDelete({ email: req.body.email.toLowerCase() });
     next(e);
   }
 };
@@ -104,7 +105,7 @@ const login = async (req, res, next) => {
 
 const reSendVerificationMail = async (req, res, next) => {
   try {
-    const email = req.query;
+    const { email } = req.query;
     if (!email) {
       return res
         .status(400)
@@ -179,7 +180,7 @@ const verifyAccount = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
   try {
-    const email = req.query;
+    const { email } = req.query;
     if (!email) {
       return res
         .status(400)
