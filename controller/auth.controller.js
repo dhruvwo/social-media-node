@@ -47,7 +47,6 @@ const signUp = async (req, res, next) => {
       message: "User signed up successfully.",
     });
   } catch (e) {
-    await userModel.findOneAndDelete({ email: req.body.email.toLowerCase() });
     next(e);
   }
 };
