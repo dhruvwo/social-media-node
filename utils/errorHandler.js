@@ -1,3 +1,4 @@
+const { MulterError } = require("multer");
 const HttpError = require("./HttpError");
 
 const errorHandler = async (error, req, res, next) => {
@@ -30,6 +31,18 @@ const errorHandler = async (error, req, res, next) => {
     }
   }
 
+  if (error instanceof MulterError) {
+    if (error.message === "File too large") {
+      return res.status(400).send({
+        status: "error",
+        message: "File size must not exceed 20 MB.",
+      });
+    }
+    return res.status(400).send({
+      status: "error",
+      message: "Only 1 image is supported at a time.",
+    });
+  }
   return res
     .status(500)
     .send({ status: "error", message: "Internal server error" });

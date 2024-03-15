@@ -6,8 +6,7 @@ const {
   description,
   isPrivate,
 } = require("../utils/validations");
-const fs = require("fs");
-const path = require("path");
+const { getImageBase64 } = require("../utils/getImageData");
 
 const CREATE_POST_VALIDATION_SCHEMA = yup.object({
   filePath,
@@ -71,6 +70,38 @@ const getFeedPost = async (req, res, next) => {
   }
 };
 
+const getUsersPosts = async (req, res, next) => {
+  try {
+    let { page, perPage, userId } = req.query;
+
+    page = page && page > 0 ? Number(page) - 1 : 0;
+    perPage = perPage && perPage > 0 ? perPage : 5;
+
+    let searchQuery = { isPrivate: false };
+    if ((userId && userId === req.user._id) || !userId) {
+      delete searchQuery.isPrivate;
+      searchQuery = { userId: req.user._id };
+    } else {
+      searchQuery.userId = userId;
+    }
+    const totalPosts = await postModal.countDocuments(searchQuery);
+    const getPosts = await postModal
+      .find(searchQuery)
+      .skip(page * perPage)
+      .limit(perPage)
+      .sort({ createdAt: "desc" });
+    return res.status(200).json({
+      status: "success",
+      data: {
+        total: totalPosts,
+        data: getPosts,
+      },
+    });
+  } catch (error) {
+    next(e);
+  }
+};
+
 const getImage = async (req, res, next) => {
   try {
     const { postId } = req.query;
@@ -99,10 +130,8 @@ const getImage = async (req, res, next) => {
         .json({ status: "error", message: "Private post." });
     }
 
-    const fileStream = fs.createReadStream(
-      path.resolve(__dirname, `../uploads/${post.filePath}`)
-    );
-    fileStream.pipe(res);
+    const base64 = await getImageBase64(post.filePath);
+    return res.status(200).json({ status: "success", imageData: base64 });
   } catch (e) {
     next(e);
   }
@@ -111,5 +140,6 @@ const getImage = async (req, res, next) => {
 module.exports = {
   createPost,
   getFeedPost,
+  getUsersPosts,
   getImage,
 };

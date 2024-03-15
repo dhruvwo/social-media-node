@@ -5,7 +5,7 @@ const validationSchema = {
     .string()
     .required("Firstname is required")
     .min(2, "Firstname must be at least 2 characters")
-    .max(15, "Firstname must be at most 15 characters")
+    .max(30, "Firstname must be at most 30 characters")
     .matches(
       /^[a-zA-Z0-9]+$/,
       "Firstname must contain only alphanumeric characters."
@@ -14,7 +14,7 @@ const validationSchema = {
     .string()
     .required("Lastname is required")
     .min(2, "Lastname must be at least 2 characters")
-    .max(15, "Lastname must be at most 15 characters")
+    .max(30, "Lastname must be at most 30 characters")
     .matches(
       /^[a-zA-Z0-9]+$/,
       "Lastname must contain only alphanumeric characters."
@@ -25,13 +25,13 @@ const validationSchema = {
     .required("Email is required"),
   username: yup
     .string()
+    .required("Username is required")
+    .min(6, "Username must be at least 6 characters")
+    .max(30, "Username must be at most 30 characters")
     .matches(
-      /^[a-z][a-z0-9_]*$/,
-      "Username must contain only alphanumeric characters."
-    )
-    .min(6, "Username is too short - should be 6 chars minimum")
-    .max(30, "Username is too long - should be 30 chars maximum")
-    .required("Username is required"),
+      /^[a-zA-Z0-9-_@.]+$/,
+      "Username must contain only alphanumeric characters and/or the following special characters: -, _, @, and ."
+    ),
   password: yup
     .string()
     .required("Password is required")
