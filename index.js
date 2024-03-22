@@ -6,6 +6,7 @@ const config = require("./config");
 const errorHandler = require("./utils/errorHandler");
 const { serverInit } = require("./utils/serverInit");
 const { initDatabaseConnection } = require("./utils/dbConnection");
+const { initSocketServer } = require("./utils/socketServer");
 
 const app = express();
 
@@ -22,7 +23,7 @@ const server = http.createServer(app);
 serverInit();
 initDatabaseConnection();
 
-// TODO: Init socket server here and then pass server to DB connection. So can start or stop server base on database connection. Currently not required.
+initSocketServer(server);
 
 server.listen(config.port, () => {
   console.log(`Server listing at ${config.port}.`);

@@ -7,6 +7,7 @@ const {
   isPrivate,
 } = require("../utils/validations");
 const { getImageBase64 } = require("../utils/getImageData");
+const { eventEmitter } = require("../utils/socketServer");
 
 const CREATE_POST_VALIDATION_SCHEMA = yup.object({
   filePath,
@@ -22,6 +23,7 @@ const createPost = async (req, res, next) => {
       userId: req.user._id,
       ...req.body,
     });
+    await eventEmitter("new-post", createdPost, createdPost.isPrivate);
     return res.status(201).json({
       status: "success",
       data: createdPost,

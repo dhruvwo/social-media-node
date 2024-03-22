@@ -32,3 +32,8 @@ For environment variable on node project:
    NODE_MAILER_USER="{Ask Dhruv/Viral}"
    NODE_MAILER_USER_PASS="{Ask Dhruv/Viral}"
 ```
+
+Socket Setup:
+
+1. For Connecting socket, pass auth token in headers.
+2. For listening to new post event, add event listener with event "new-post".
