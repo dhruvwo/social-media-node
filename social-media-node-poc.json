@@ -19,7 +19,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"firstname\": \"Viral\",\r\n    \"lastname\": \"Deshle\",\r\n    \"email\": \"viral.webosmotic1@gmail.com\",\r\n    \"username\": \"dev_viral1\",\r\n    \"password\": \"12345678\",\r\n    \"isPrivate\": true\r\n}",
+							"raw": "{\r\n    \"firstname\": \"Viral\",\r\n    \"lastname\": \"Deshle\",\r\n    \"email\": \"viral.webosmotic@gmail.com\",\r\n    \"username\": \"dev_viral1\",\r\n    \"password\": \"12345678\",\r\n    \"isPrivate\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -138,7 +138,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/posts/get-feed-posts?page=1&perPage=20",
+							"raw": "{{baseURL}}/posts/get-feed-posts?page=1&perPage=20&search&isMyPostsOnly&isPrivate",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -154,6 +154,18 @@
 								{
 									"key": "perPage",
 									"value": "20"
+								},
+								{
+									"key": "search",
+									"value": null
+								},
+								{
+									"key": "isMyPostsOnly",
+									"value": null
+								},
+								{
+									"key": "isPrivate",
+									"value": null
 								}
 							]
 						}
@@ -228,7 +240,7 @@
 					"response": []
 				},
 				{
-					"name": "Get all User",
+					"name": "Get all Users",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -256,7 +268,7 @@
 					"response": []
 				},
 				{
-					"name": "Get Use Profile",
+					"name": "Get User Profile",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -305,14 +317,13 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "image",
-									"type": "file",
-									"src": "/home/webosmotic/Pictures/Screenshots/Screenshot from 2023-12-18 16-06-02.png"
+							"mode": "raw",
+							"raw": "{\n    \"firstname\": \"Viral\",\n    \"lastname\": \"Deshle\",\n    \"username\": \"dev_viral1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{baseURL}}/users/update-user",
