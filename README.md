@@ -29,8 +29,6 @@ For environment variable on node project:
 ```
    PORT=5000
    DATABASE_URL="mongodb://127.0.0.1:27017/postgram"
-   NODE_MAILER_USER="{Ask Dhruv/Viral}"
-   NODE_MAILER_USER_PASS="{Ask Dhruv/Viral}"
 ```
 
 Socket Setup:
